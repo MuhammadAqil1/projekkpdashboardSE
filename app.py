@@ -210,44 +210,17 @@ with tab_overview:
 
     st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
-    col_left, col_right = st.columns([1, 1.8])
-
-    with col_left:
-        st.markdown(f"#### 🏅 Peringkat (Tgl {last_date})")
-        df_display = pd.DataFrame({
-            "Kabupaten/Kota": ranking_terakhir.index,
-            "Rank": ranking_terakhir.values.astype(int),
-            "Progress": [nilai_terakhir.loc[n] for n in ranking_terakhir.index],
-            "Growth": [growth.loc[n] for n in ranking_terakhir.index]
-        })
-        
-        st.dataframe(
-            df_display,
-            column_config={
-                "Rank": st.column_config.NumberColumn("Rank", format="#%d"),
-                "Progress": st.column_config.ProgressColumn(
-                    "Penyelesaian", format="%.1f%%",
-                    min_value=0, max_value=max_val_global * 1.1
-                ),
-                "Growth": st.column_config.NumberColumn("Pertumbuhan", format="+%.1f%%")
-            },
-            hide_index=True,
-            use_container_width=True,
-            height=500
-        )
-
-    with col_right:
-        st.markdown("#### 📈 Tren Individual (Small Multiples)")
-        df_melt = df_n.reset_index().melt(id_vars="index", value_vars=selected_dates, var_name="Date", value_name="Progress")
-        df_melt.rename(columns={"index": "Kabupaten"}, inplace=True)
-        
-        fig_facet = px.area(
-            df_melt, x="Date", y="Progress", facet_col="Kabupaten", facet_col_wrap=4,
-            color="Kabupaten", color_discrete_map=color_map,
-            height=500
-        )
-        
-        fig_facet.update_traces(line_shape='spline', fill='tozeroy', fillcolor=None, fillpattern_shape=None)
+    st.markdown("#### 📈 Tren Individual (Small Multiples)")
+    df_melt = df_n.reset_index().melt(id_vars="index", value_vars=selected_dates, var_name="Date", value_name="Progress")
+    df_melt.rename(columns={"index": "Kabupaten"}, inplace=True)
+    
+    fig_facet = px.area(
+        df_melt, x="Date", y="Progress", facet_col="Kabupaten", facet_col_wrap=4,
+        color="Kabupaten", color_discrete_map=color_map,
+        height=500
+    )
+    
+    fig_facet.update_traces(line_shape='spline', fill='tozeroy', fillcolor=None, fillpattern_shape=None)
         
         fig_facet.update_layout(
             paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
