@@ -247,66 +247,35 @@ with tab_overview:
 with tab_compare:
     st.markdown("#### 🔍 Fokus Perbandingan")
     
-    col_slope, col_line = st.columns([1, 1.5])
-    
-    with col_slope:
-        st.markdown("##### 🏁 Start vs End (Slopegraph)")
-        st.caption(f"Dari {first_date} ke {last_date}")
+    st.markdown("##### 📈 Tren Detail Terpilih")
+    fig_val = go.Figure()
+    for kab in selected_kab:
+        fig_val.add_trace(go.Scatter(
+            x=selected_dates, y=df_n.loc[kab].values,
+            mode="lines", name=kab,
+            line=dict(color=color_map[kab], width=3, shape="spline"),
+            hovertemplate=f"<b>{kab}</b><br>%{{x}}<br>%{{y:.1f}}%<extra></extra>",
+        ))
         
-        fig_slope = go.Figure()
-        for kab in selected_kab:
-            v_start = df_n.loc[kab, first_date]
-            v_end = df_n.loc[kab, last_date]
-            fig_slope.add_trace(go.Scatter(
-                x=[first_date, last_date], y=[v_start, v_end],
-                mode="lines+markers+text",
-                name=kab,
-                text=[f"", f"{v_end:.1f}%"],
-                textposition="middle right",
-                line=dict(color=color_map[kab], width=3),
-                marker=dict(size=8),
-                hovertemplate=f"<b>{kab}</b><br>%{{x}}: %{{y:.1f}}%<extra></extra>"
-            ))
-            
-        fig_slope.update_layout(
-            height=450, margin=dict(l=20, r=60, t=10, b=30),
-            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-            showlegend=False, font=dict(family="Inter", color=TEXT_COLOR),
-            xaxis=dict(showgrid=False, categoryorder='array', categoryarray=[first_date, last_date]),
-            yaxis=dict(showgrid=False, showticklabels=False, zeroline=False)
-        )
-        st.plotly_chart(fig_slope, use_container_width=True)
+    if show_provinsi and sr_prov_n is not None:
+        fig_val.add_trace(go.Scatter(
+            x=selected_dates, y=sr_prov_n.values,
+            mode="lines", name="PROVINSI RIAU",
+            line=dict(color="#94a3b8", width=2, dash="dash", shape="spline"),
+        ))
 
-    with col_line:
-        st.markdown("##### 📈 Tren Detail Terpilih")
-        fig_val = go.Figure()
-        for kab in selected_kab:
-            fig_val.add_trace(go.Scatter(
-                x=selected_dates, y=df_n.loc[kab].values,
-                mode="lines", name=kab,
-                line=dict(color=color_map[kab], width=3, shape="spline"),
-                hovertemplate=f"<b>{kab}</b><br>%{{x}}<br>%{{y:.1f}}%<extra></extra>",
-            ))
-            
-        if show_provinsi and sr_prov_n is not None:
-            fig_val.add_trace(go.Scatter(
-                x=selected_dates, y=sr_prov_n.values,
-                mode="lines", name="PROVINSI RIAU",
-                line=dict(color="#94a3b8", width=2, dash="dash", shape="spline"),
-            ))
-
-        fig_val.update_layout(
-            height=450, margin=dict(l=20, r=20, t=10, b=40),
-            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-            legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5),
-            xaxis=dict(
-                gridcolor=GRID_COLOR, categoryorder='array', 
-                categoryarray=selected_dates, tickangle=-45
-            ),
-            yaxis=dict(gridcolor=GRID_COLOR),
-            hovermode="x unified", font=dict(family="Inter", color=TEXT_COLOR)
-        )
-        st.plotly_chart(fig_val, use_container_width=True)
+    fig_val.update_layout(
+        height=450, margin=dict(l=20, r=20, t=10, b=40),
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5),
+        xaxis=dict(
+            gridcolor=GRID_COLOR, categoryorder='array', 
+            categoryarray=selected_dates, tickangle=-45
+        ),
+        yaxis=dict(gridcolor=GRID_COLOR),
+        hovermode="x unified", font=dict(family="Inter", color=TEXT_COLOR)
+    )
+    st.plotly_chart(fig_val, use_container_width=True)
 
 
 # ════════════════════════════════════════════════════
