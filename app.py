@@ -7,7 +7,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import time
 from data_loader import load_from_excel, load_from_gsheet, split_provinsi
 
@@ -22,7 +21,7 @@ st.set_page_config(
 )
 
 # ──────────────────────────────────────────────────
-# CUSTOM CSS — Glassmorphism & Spacing
+# CUSTOM CSS — Light Theme
 # ──────────────────────────────────────────────────
 st.markdown("""
 <style>
@@ -32,35 +31,36 @@ st.markdown("""
 
 /* ── KPI card ── */
 .kpi-card {
-    background: rgba(30, 41, 59, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     border-radius: 16px;
     padding: 1.5rem;
     text-align: center;
     backdrop-filter: blur(10px);
-    transition: transform 0.2s ease, border-color 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 .kpi-card:hover {
     transform: translateY(-2px);
-    border-color: rgba(14, 165, 233, 0.4);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
 }
 .kpi-value {
     font-size: 2.2rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    background: linear-gradient(135deg, #0ea5e9, #4f46e5);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     line-height: 1.2;
 }
-.kpi-label { font-size: 0.85rem; color: #94a3b8; margin-top: 0.4rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
-.kpi-sublabel { font-size: 0.95rem; color: #f8fafc; margin-top: 0.25rem; font-weight: 600; }
+.kpi-label { font-size: 0.85rem; color: #64748b; margin-top: 0.4rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+.kpi-sublabel { font-size: 0.95rem; color: #0f172a; margin-top: 0.25rem; font-weight: 600; }
 
 /* ── Header ── */
 .dashboard-header { text-align: center; padding: 1rem 0 2rem 0; }
-.dashboard-header h1 { font-size: 2.2rem; font-weight: 800; background: linear-gradient(135deg, #0ea5e9, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.2rem; }
-.dashboard-header p { color: #94a3b8; font-size: 1.05rem; font-weight: 400; }
+.dashboard-header h1 { font-size: 2.2rem; font-weight: 800; background: linear-gradient(135deg, #0284c7, #4f46e5, #be185d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.2rem; }
+.dashboard-header p { color: #64748b; font-size: 1.05rem; font-weight: 400; }
 
-.section-divider { height: 1px; background: linear-gradient(90deg, transparent, #0ea5e9, transparent); margin: 2rem 0; opacity: 0.2; }
+.section-divider { height: 1px; background: linear-gradient(90deg, transparent, #e2e8f0, transparent); margin: 2rem 0; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -159,11 +159,13 @@ first_date = selected_dates[0]
 color_map = get_color_map(all_kab)
 max_val_global = df_nilai.max().max()
 
+TEXT_COLOR = "#1e293b"
+GRID_COLOR = "rgba(0,0,0,0.06)"
+
 # ════════════════════════════════════════════════════
 # TAB 1: OVERVIEW
 # ════════════════════════════════════════════════════
 with tab_overview:
-    # --- KPI Cards ---
     nilai_terakhir = df_n[last_date].sort_values(ascending=False)
     ranking_terakhir = df_r[last_date].sort_values(ascending=True)
     top1_name = ranking_terakhir.index[0]
@@ -184,7 +186,7 @@ with tab_overview:
     with c2:
         st.markdown(f"""
         <div class="kpi-card">
-            <div class="kpi-value" style="background: linear-gradient(135deg, #34d399, #10b981); -webkit-background-clip: text;">🚀 +{growth.max():.1f}%</div>
+            <div class="kpi-value" style="background: linear-gradient(135deg, #10b981, #059669); -webkit-background-clip: text;">🚀 +{growth.max():.1f}%</div>
             <div class="kpi-label">Pertumbuhan Tercepat</div>
             <div class="kpi-sublabel">{growth.idxmax()}</div>
         </div>
@@ -192,7 +194,7 @@ with tab_overview:
     with c3:
         st.markdown(f"""
         <div class="kpi-card">
-            <div class="kpi-value" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); -webkit-background-clip: text;">{prov_val:.1f}%</div>
+            <div class="kpi-value" style="background: linear-gradient(135deg, #d97706, #b45309); -webkit-background-clip: text;">{prov_val:.1f}%</div>
             <div class="kpi-label">Rata-rata Provinsi</div>
             <div class="kpi-sublabel">Tgl {last_date}</div>
         </div>
@@ -200,7 +202,7 @@ with tab_overview:
     with c4:
         st.markdown(f"""
         <div class="kpi-card">
-            <div class="kpi-value" style="background: linear-gradient(135deg, #fb7185, #f43f5e); -webkit-background-clip: text;">📉 +{growth.min():.1f}%</div>
+            <div class="kpi-value" style="background: linear-gradient(135deg, #e11d48, #be123c); -webkit-background-clip: text;">📉 +{growth.min():.1f}%</div>
             <div class="kpi-label">Pertumbuhan Terlambat</div>
             <div class="kpi-sublabel">{growth.idxmin()}</div>
         </div>
@@ -208,12 +210,10 @@ with tab_overview:
 
     st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
-    # --- Modern Layout: Table + Small Multiples ---
     col_left, col_right = st.columns([1, 1.8])
 
     with col_left:
         st.markdown(f"#### 🏅 Peringkat (Tgl {last_date})")
-        # Modern Progress Column Dataframe
         df_display = pd.DataFrame({
             "Kabupaten/Kota": ranking_terakhir.index,
             "Rank": ranking_terakhir.values.astype(int),
@@ -238,8 +238,6 @@ with tab_overview:
 
     with col_right:
         st.markdown("#### 📈 Tren Individual (Small Multiples)")
-        # Replacing the spaghetti chart with Small Multiples / Facets
-        # Melt the dataframe for Plotly Express
         df_melt = df_n.reset_index().melt(id_vars="index", value_vars=selected_dates, var_name="Date", value_name="Progress")
         df_melt.rename(columns={"index": "Kabupaten"}, inplace=True)
         
@@ -252,15 +250,12 @@ with tab_overview:
         fig_facet.update_traces(line_shape='spline', fill='tozeroy', fillcolor=None, fillpattern_shape=None)
         
         fig_facet.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(family="Inter", color="#f8fafc"),
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(family="Inter", color=TEXT_COLOR),
             margin=dict(l=10, r=10, t=30, b=10),
-            showlegend=False,
-            hovermode="x unified"
+            showlegend=False, hovermode="x unified"
         )
         
-        # Lock category order to prevent zigzag and hide grids
         fig_facet.update_xaxes(
             categoryorder='array', categoryarray=selected_dates,
             showgrid=False, showticklabels=False, zeroline=False
@@ -269,7 +264,6 @@ with tab_overview:
             showgrid=False, showticklabels=False, zeroline=False, 
             range=[0, max_val_global * 1.1]
         )
-        # Clean facet titles
         fig_facet.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
         
         st.plotly_chart(fig_facet, use_container_width=True)
@@ -303,10 +297,9 @@ with tab_compare:
             ))
             
         fig_slope.update_layout(
-            height=450,
-            margin=dict(l=20, r=60, t=10, b=30),
+            height=450, margin=dict(l=20, r=60, t=10, b=30),
             paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-            showlegend=False,
+            showlegend=False, font=dict(family="Inter", color=TEXT_COLOR),
             xaxis=dict(showgrid=False, categoryorder='array', categoryarray=[first_date, last_date]),
             yaxis=dict(showgrid=False, showticklabels=False, zeroline=False)
         )
@@ -327,7 +320,7 @@ with tab_compare:
             fig_val.add_trace(go.Scatter(
                 x=selected_dates, y=sr_prov_n.values,
                 mode="lines", name="PROVINSI RIAU",
-                line=dict(color="#cbd5e1", width=2, dash="dash", shape="spline"),
+                line=dict(color="#94a3b8", width=2, dash="dash", shape="spline"),
             ))
 
         fig_val.update_layout(
@@ -335,11 +328,11 @@ with tab_compare:
             paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
             legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5),
             xaxis=dict(
-                gridcolor="rgba(255,255,255,0.05)", categoryorder='array', 
+                gridcolor=GRID_COLOR, categoryorder='array', 
                 categoryarray=selected_dates, tickangle=-45
             ),
-            yaxis=dict(gridcolor="rgba(255,255,255,0.05)"),
-            hovermode="x unified",
+            yaxis=dict(gridcolor=GRID_COLOR),
+            hovermode="x unified", font=dict(family="Inter", color=TEXT_COLOR)
         )
         st.plotly_chart(fig_val, use_container_width=True)
 
@@ -363,49 +356,90 @@ with tab_race:
         auto_play = st.button("▶️ Mulai Auto-Play", use_container_width=True)
 
     current_date = selected_dates[frame_idx]
-    st.markdown(f"#### Data per: **{current_date}**")
+    
+    # Layout mirip Matplotlib: Kiri Bar, Kanan Line
+    col_bar, col_line = st.columns([1, 1.5])
+    bar_placeholder = col_bar.empty()
+    line_placeholder = col_line.empty()
 
-    # Bar chart
-    vals = df_n[current_date].sort_values(ascending=True)
-    bar_colors = [color_map.get(k, "#0ea5e9") for k in vals.index]
+    def draw_animation_frame(d_idx, container_bar, container_line):
+        d = selected_dates[d_idx]
+        
+        # --- 1. Bar Chart (Kiri) ---
+        vals_anim = df_n[d].sort_values(ascending=True)
+        bar_c = [color_map.get(k, "#0ea5e9") for k in vals_anim.index]
+        
+        fig_bar = go.Figure(go.Bar(
+            y=vals_anim.index, x=vals_anim.values, orientation="h",
+            marker=dict(color=bar_c), text=[f"{v:.1f}%" for v in vals_anim.values],
+            textposition="outside", textfont=dict(size=12, color=TEXT_COLOR),
+            hovertemplate="<b>%{y}</b><br>%{x:.1f}%<extra></extra>"
+        ))
+        fig_bar.update_layout(
+            height=500, margin=dict(l=10, r=40, t=50, b=20),
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+            title=dict(text=f"Tanggal {d}", font=dict(size=16, color=TEXT_COLOR)),
+            xaxis=dict(range=[0, max_val_global * 1.15], showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False), bargap=0.15,
+            font=dict(family="Inter", color=TEXT_COLOR)
+        )
+        container_bar.plotly_chart(fig_bar, use_container_width=True)
 
-    fig_bar = go.Figure()
-    fig_bar.add_trace(go.Bar(
-        y=vals.index, x=vals.values, orientation="h",
-        marker=dict(color=bar_colors, line_width=0, pattern_shape=None),
-        text=[f"{v:.1f}%" for v in vals.values], textposition="outside",
-        textfont=dict(size=13, color="#f8fafc", family="Inter"),
-        hovertemplate="<b>%{y}</b><br>%{x:.2f}%<extra></extra>",
-    ))
-    fig_bar.update_layout(
-        height=500, margin=dict(l=10, r=60, t=10, b=20),
-        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-        xaxis=dict(range=[0, max_val_global * 1.15], showgrid=False, zeroline=False, showticklabels=False),
-        yaxis=dict(showgrid=False),
-        bargap=0.15
-    )
-    st.plotly_chart(fig_bar, use_container_width=True, key="bar_race")
-
-    # Autoplay loop
-    if auto_play:
-        placeholder = st.empty()
-        for d in selected_dates:
-            vals_anim = df_n[d].sort_values(ascending=True)
-            bar_c = [color_map.get(k, "#0ea5e9") for k in vals_anim.index]
-            fig_a = go.Figure(go.Bar(
-                y=vals_anim.index, x=vals_anim.values, orientation="h",
-                marker=dict(color=bar_c), text=[f"{v:.1f}%" for v in vals_anim.values],
-                textposition="outside", textfont=dict(size=13, color="#f8fafc")
+        # --- 2. Line Chart (Kanan) ---
+        fig_line = go.Figure()
+        x_dates = selected_dates[:d_idx+1]
+        
+        for kab in df_r.index:
+            y_vals = df_r.loc[kab, x_dates].values
+            fig_line.add_trace(go.Scatter(
+                x=x_dates, y=y_vals,
+                mode="lines+markers",
+                name=kab,
+                line=dict(color=color_map.get(kab, "#0ea5e9"), width=2),
+                marker=dict(size=6),
             ))
-            fig_a.update_layout(
-                height=500, margin=dict(l=10, r=60, t=40, b=20),
-                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                title=dict(text=f"📅 {d}", x=0.5, font=dict(size=20, color="#f8fafc")),
-                xaxis=dict(range=[0, max_val_global * 1.15], showgrid=False, showticklabels=False),
-                yaxis=dict(showgrid=False), bargap=0.15
-            )
-            placeholder.plotly_chart(fig_a, use_container_width=True)
+            # Text at the end of the line
+            if len(x_dates) > 0:
+                fig_line.add_annotation(
+                    x=x_dates[-1], y=y_vals[-1],
+                    text=kab, showarrow=False,
+                    xanchor="left", xshift=10,
+                    font=dict(size=10, color=color_map.get(kab, "#0ea5e9"), weight="bold")
+                )
+
+        n_kabupaten = len(df_r.index)
+        fig_line.update_layout(
+            height=500, margin=dict(l=10, r=100, t=50, b=40), 
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+            title=dict(text="Riwayat Ranking", font=dict(size=16, color=TEXT_COLOR)),
+            xaxis=dict(
+                gridcolor=GRID_COLOR,
+                categoryorder='array', categoryarray=selected_dates,
+                range=[-0.5, len(selected_dates) + 2.5] # space for text labels
+            ),
+            yaxis=dict(
+                title="Ranking",
+                gridcolor=GRID_COLOR,
+                autorange="reversed",
+                dtick=1,
+                range=[n_kabupaten + 0.5, 0.5]
+            ),
+            showlegend=False,
+            font=dict(family="Inter", color=TEXT_COLOR)
+        )
+        # Vertical dotted line for current frame
+        fig_line.add_vline(x=d, line_width=1.5, line_dash="dot", line_color="gray")
+        
+        container_line.plotly_chart(fig_line, use_container_width=True)
+
+    # Autoplay logic
+    if auto_play:
+        for i in range(len(selected_dates)):
+            draw_animation_frame(i, bar_placeholder, line_placeholder)
             time.sleep(0.4)
+    else:
+        # Draw current frame based on slider
+        draw_animation_frame(frame_idx, bar_placeholder, line_placeholder)
 
 
 # ════════════════════════════════════════════════════
@@ -422,4 +456,4 @@ with tab_raw:
     st.download_button("📥 Download CSV", data=df_display.to_csv(), file_name="data_sensus.csv")
 
 st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #64748b; font-size: 0.85rem;'>Dashboard Analitik Sensus Riau 2026 | Sinkronisasi Google Sheets</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 0.85rem;'>Dashboard Analitik Sensus Riau 2026 | Sinkronisasi Google Sheets</p>", unsafe_allow_html=True)
