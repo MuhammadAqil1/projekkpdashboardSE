@@ -203,7 +203,7 @@ with tab_overview:
         st.markdown(f"""
         <div class="kpi-card">
             <div class="kpi-value" style="background: linear-gradient(135deg, #e11d48, #be123c); -webkit-background-clip: text;">📉 +{growth.min():.1f}%</div>
-            <div class="kpi-label">Pertumbuhan Terlambat</div>
+            <div class="kpi-label">Progres Terlambat</div>
             <div class="kpi-sublabel">{growth.idxmin()}</div>
         </div>
         """, unsafe_allow_html=True)
