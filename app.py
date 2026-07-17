@@ -221,25 +221,24 @@ with tab_overview:
     )
     
     fig_facet.update_traces(line_shape='spline', fill='tozeroy', fillcolor=None, fillpattern_shape=None)
-        
-        fig_facet.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(family="Inter", color=TEXT_COLOR),
-            margin=dict(l=10, r=10, t=30, b=10),
-            showlegend=False, hovermode="x unified"
-        )
-        
-        fig_facet.update_xaxes(
-            categoryorder='array', categoryarray=selected_dates,
-            showgrid=False, showticklabels=False, zeroline=False
-        )
-        fig_facet.update_yaxes(
-            showgrid=False, showticklabels=False, zeroline=False, 
-            range=[0, max_val_global * 1.1]
-        )
-        fig_facet.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
-        
-        st.plotly_chart(fig_facet, use_container_width=True)
+    fig_facet.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(family="Inter", color=TEXT_COLOR),
+        margin=dict(l=10, r=10, t=30, b=10),
+        showlegend=False, hovermode="x unified"
+    )
+    
+    fig_facet.update_xaxes(
+        categoryorder='array', categoryarray=selected_dates,
+        showgrid=False, showticklabels=False, zeroline=False
+    )
+    fig_facet.update_yaxes(
+        showgrid=False, showticklabels=False, zeroline=False, 
+        range=[0, max_val_global * 1.1]
+    )
+    fig_facet.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+    
+    st.plotly_chart(fig_facet, use_container_width=True)
 
 
 # ════════════════════════════════════════════════════
